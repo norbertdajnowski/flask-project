@@ -25,9 +25,12 @@ class User(UserMixin, db.Model):
 	
 class Blog(db.Model):
 
-    def __init__(self, arg):
-        super(Blog, self).__init__()
-        self.arg = arg
+    def __init__(self, title, author, date, content, image):
+        self.title = title
+        self.author = author
+        self.date = date
+        self.content = content
+        self.image = image
 
     def __repr__(self):
         return '{"Title": "%r"}' % self.title

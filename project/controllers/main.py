@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
 from project import app, db
 from project.models.Model import User, Image, Blog
-from flask import render_template, request, jsonify, Flask, Response, redirect, url_for, send_from_directory
+from flask import render_template, request, jsonify, Flask, Response, redirect, url_for, send_from_directory, flash
 from flask_login import login_required, current_user, login_user
 from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
+from datetime import datetime
 from wtforms import StringField
 from wtforms.validators import DataRequired					
 
@@ -39,10 +40,42 @@ def dashGallery():
 def dashBlog():
 	return render_template('dashBlog.html', current_user=current_user, images=images, logos=logos)
 
-@app.route('/postBlog')
+@app.route('/postBlog', methods=['POST'])
 @login_required
 def postBlog():
-	pass
+
+	title = request.form.get('titleInput')
+	author = request.form.get('authorInput')
+	image = request.form.get('imageInput')
+	content = request.form.get('descriptionInput')
+	objDatetime = datetime.now()
+	date = objDatetime.strftime('%Y-%m-%d %H:%M:%S')
+
+	if len(title) > 249 or len(title) < 10: # if a user is found, we want to redirect back to signup page so user can try again
+		flash('Something is wrong with the title!')
+		return redirect(url_for('dashBlog'))
+
+	if len(author) > 119 or len(author) < 5:
+		flash('Something is wrong with the author field!')
+		return redirect(url_for('dashBlog'))
+
+	if len(image) > 119:
+		flash('Something is wrong with the image filename')
+		return redirect(url_for('dashBlog'))
+
+	if len(content) > 3499 or len(content) < 10:
+		flash('Something is wrong with the description!')
+		return redirect(url_for('dashBlog'))
+
+    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
+	new_blog = Blog(title=title, author=author, date=date, content=content, image=image)
+
+    # add the new user to the database
+	db.session.add(new_blog)
+	db.session.commit()
+
+	flash('Post added Succesfully')
+	return redirect(url_for('dashBlog'))
 
 @app.route('/about')
 def about():
@@ -72,7 +105,8 @@ def removeImg():
 @app.route('/uploadImg', methods=['POST'])
 def uploadImg():
 	global images
-	file = request.form.get('file1')
+	file = request.files['file1']
+	print(file)
 	Image.upload(file)
 	images = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery')
 	return render_template('dashGallery.html', current_user=current_user, logos=logos, images=images)

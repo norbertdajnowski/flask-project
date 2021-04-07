@@ -26,20 +26,20 @@
             <div class="col-md-8" style="text-align: center; width: 100%; margin-top: 50px;">
             <form method="POST" action="/postBlog" name="blogEntry" id="blogEntry" style="display: inline-block; width: 80%;">
                <div class="form-group">
-                <label for="titleInput">Title: </label>
-                <input type="text" class="form-control" id="titleInput">
+                <label for="titleInput">Title *: </label>
+                <input type="text" class="form-control" name="titleInput" id="titleInput">
                </div>
                <div class="form-group">
-                <label for="authorInput">Author: </label>
-                <input type="text" class="form-control" id="authorInput">
+                <label for="authorInput">Author *: </label>
+                <input type="text" class="form-control" name="authorInput" id="authorInput">
                </div>
               <div class="form-group" style="display: inline-block; margin-top: 10px;">
                 <label for="imageInput">Image: </label>
-                <input type="file" class="form-control-file" id="imageInput">
+                <input type="file" class="form-control-file" name="imageInput" id="imageInput">
               </div>
                <div class="form-group" style="margin-top: 10px;">
-                <label for="descriptionInput">Description: </label>
-                <textarea type="text" class="form-control" id="descriptionInput" rows="4"></textarea>
+                <label for="descriptionInput">Description *: </label>
+                <textarea type="text" class="form-control" name="descriptionInput" id="descriptionInput" rows="4"></textarea>
               </div>
               <button class="btn btn-primary" type="submit">Submit Blog Post</button>
             </form>
