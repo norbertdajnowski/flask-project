@@ -85,12 +85,9 @@ class FilesystemObject(object):
         return f'<{self.__class__.__name__}(filename={self.path}, root={self.root_dir})>'
 
     def upload(post):
-        absolutePath = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery/"
-        """Get a POST file and save it to the settings.GALLERY_ROOT_DIR"""
-        # TODO: handle filename conflicts
-        # http://flask.pocoo.org/docs/patterns/fileuploads/
-        print('saving at ' + absolutePath)
-        post.save(str(absolutePath))
+        galleryPath = "project/uploads/gallery/"
+
+        post.save(galleryPath + "12.foo.jpg")
 
     def remove(file):
         absolutePath = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery/"

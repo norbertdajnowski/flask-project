@@ -50,6 +50,8 @@ def postBlog():
 	content = request.form.get('descriptionInput')
 	objDatetime = datetime.now()
 	date = objDatetime.strftime('%Y-%m-%d %H:%M:%S')
+	imageData = request.files['imageInput']
+	Image.upload(imageData)
 
 	if len(title) > 249 or len(title) < 10: # if a user is found, we want to redirect back to signup page so user can try again
 		flash('Something is wrong with the title!')
