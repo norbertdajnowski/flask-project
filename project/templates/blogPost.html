@@ -26,9 +26,10 @@
          <!-- Author | Date/Time -->
          <p style="font-weight: bold;">By {{ blog.author }} | {{ blog.date }}</p>
          {% if (blog.image != None) %}
-              <!-- Preview Image -->
-            <img class="img-fluid rounded" src="{{ url_for('blog_static', filename=blog.image) }}" alt="">
+            <!-- Preview Image -->
+            <img class="img-fluid blog-img" src="{{ url_for('blog_static', filename=blog.image) }}">
          {% endif %}
+         <br></br>
          <p>{{ blog.content }}</p>
          </div>
          </div>

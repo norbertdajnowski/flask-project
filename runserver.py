@@ -2,7 +2,9 @@
 # -*- coding: utf-8 -*-
 import os
 from project import app
+import dotenv
 
 if __name__ == '__main__':
-    port = int(os.environ.get("PORT", 5000))
-    app.run('localhost', port=port)
+    CONFIG = dotenv.dotenv_values()
+    port = int(os.environ.get("PORT", 5017))
+    app.run("localhost", port=port)

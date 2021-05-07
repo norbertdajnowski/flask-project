@@ -74,7 +74,7 @@
             {
                $('.filter').removeClass('hidden');
                $('.filter').show();
-               $(".filter").not('.'+value).hide('3000');
+               $('.filter').not('.'+value).hide('1000');
             }
             });
 
@@ -121,19 +121,11 @@
             </div>
             <ul class="nav nav-stacked list-group">
 
-                <li class="{% block navGallery %}{% endblock %}"><a href="{{url_for('start')}}">Gallery</a></li>
-                <li class="{% block navAbout %}{% endblock %}"><a href="{{url_for('about')}}">About</a></li>
-                <li class="{% block navBlog %}{% endblock %}"><a style="" href="{{url_for('blog')}}">Blog</a></li>
+                <li class="{% block navHome %}{% endblock %}"><a href="{{url_for('start')}}">Home</a></li>
+                <li class="{% block navGallery %}{% endblock %}"><a href="{{url_for('gallery')}}">Gallery</a></li>
+                <li class="{% block navBlog %}{% endblock %}"><a href="{{url_for('blog')}}">Blog</a></li>
         
             </ul><br>
-            <div class="fb-wrapper">
-                    <div class="fb-page" 
-                        data-href="https://www.facebook.com/Tasty-Time-Polski-Katering-100393395056757/"
-                        data-width="380" 
-                        data-hide-cover="false"
-                        data-show-facepile="false">
-                    </div>  
-                </div>
             </div>
 
                     {% macro render_error(field) %}

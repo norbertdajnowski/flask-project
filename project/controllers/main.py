@@ -7,10 +7,14 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_wtf import FlaskForm
 from datetime import datetime
 from wtforms import StringField
-from wtforms.validators import DataRequired					
+from wtforms.validators import DataRequired	
+import dotenv		
 
-logos = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/logos')
-images = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery')
+#CONFIG SETUP
+CONFIG = dotenv.dotenv_values()
+base_url = CONFIG["BASE_URL"]
+logos = Image.all(base_url + 'project/uploads/logos')
+images = Image.all(base_url + 'project/uploads/gallery')
 
 class CreateForm(FlaskForm):
     text = StringField('name', validators=[DataRequired()])
@@ -23,46 +27,48 @@ def after_request(response):
 	response.headers.add('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS')
 	return response
 
-
-@app.route('/')
-def start():
+#Loading images for the gallery page
+@app.route('/gallery')
+def gallery():
 	db.create_all()
-	images = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery')
+	images = Image.all(base_url + 'project/uploads/gallery')
 	return render_template('gallery.html', current_user=current_user, images=images, logos=logos)
 
+#Admin gallery access
 @app.route('/dashGallery')
 @login_required
 def dashGallery():
 	return render_template('dashGallery.html', current_user=current_user, images=images, logos=logos)
 
+#Admin blog access
 @app.route('/dashBlog')
 @login_required
 def dashBlog():
 	return render_template('dashBlog.html', current_user=current_user, images=images, logos=logos)
 
+#Blog post method
 @app.route('/postBlog', methods=['POST'])
 @login_required
 def postBlog():
 
+	#Collecting all form input data
 	title = request.form.get('titleInput')
 	author = request.form.get('authorInput')
-	image = request.form.get('imageInput')
 	content = request.form.get('descriptionInput')
 	objDatetime = datetime.now()
 	date = objDatetime.strftime('%Y-%m-%d %H:%M:%S')
 	imageData = request.files['imageInput']
-	Image.upload(imageData)
+	filename = str(imageData).split("'") #Figuring out the filename of the image
+	if filename[1] != "None":
+		Image.uploadBlog(imageData, filename[1]) #Uploading image to blog folder
 
-	if len(title) > 249 or len(title) < 10: # if a user is found, we want to redirect back to signup page so user can try again
+	#Entry data validated
+	if len(title) > 249 or len(title) < 5: 
 		flash('Something is wrong with the title!')
 		return redirect(url_for('dashBlog'))
 
-	if len(author) > 119 or len(author) < 5:
+	if len(author) > 119 or len(author) < 2:
 		flash('Something is wrong with the author field!')
-		return redirect(url_for('dashBlog'))
-
-	if len(image) > 119:
-		flash('Something is wrong with the image filename')
 		return redirect(url_for('dashBlog'))
 
 	if len(content) > 3499 or len(content) < 10:
@@ -70,26 +76,28 @@ def postBlog():
 		return redirect(url_for('dashBlog'))
 
     # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-	new_blog = Blog(title=title, author=author, date=date, content=content, image=image)
+	new_blog = Blog(title=title, author=author, date=date, content=content, image=filename[1])
 
     # add the new user to the database
 	db.session.add(new_blog)
 	db.session.commit()
 
 	flash('Post added Succesfully')
-	return redirect(url_for('dashBlog'))
+	return redirect(url_for('dashBlog')) #Redirect back to admin blog page
 
-@app.route('/about')
-def about():
-	pass
+@app.route('/')
+def start(): #Landing page method
+	db.create_all()
+	images = Image.all(base_url + 'project/uploads/gallery')
+	return render_template('home.html', current_user=current_user, images=images, logos=logos) #Loads home page
 
-
+#Loads blog page
 @app.route('/blog')
 def blog():
 	blogs = Blog.query.order_by(Blog.id.desc()).all()
 	return render_template('blog.html', current_user=current_user, blogs=blogs, logos=logos)
 
-
+#Fetches a specific blog entry and requests for it to be displayed on blog post page
 @app.route('/blogPost', methods=['POST','GET'])
 def getBlog():
 	print("success")
@@ -97,78 +105,59 @@ def getBlog():
 	blog = Blog.query.get(id)
 	return render_template('blogPost.html', current_user=current_user, blog=blog, logos=logos)
 
+#Admin image removal method
 @app.route('/removeImg', methods=['POST'])
+@login_required
 def removeImg():
 	global images
 	Image.remove(request.form.get('filename'))
-	images = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery')
+	images = Image.all(base_url + 'project/uploads/gallery')
 	return render_template('dashGallery.html', current_user=current_user, logos=logos, images=images)
 
+#Admin image upload method
 @app.route('/uploadImg', methods=['POST'])
+@login_required
 def uploadImg():
 	global images
 	file = request.files['file1']
-	print(file)
 	Image.upload(file)
-	images = Image.all('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery')
+	images = Image.all(base_url + 'project/uploads/gallery')
 	return render_template('dashGallery.html', current_user=current_user, logos=logos, images=images)
+
+#Fetching images
 
 @app.route('/uploads/gallery/<path:filename>')
 def gallery_static(filename):
-    return send_from_directory('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery', filename)
+    return send_from_directory(base_url + 'project/uploads/gallery', filename)
 
 
 @app.route('/uploads/logos/<path:filename>')
 def logos_static(filename):
-    return send_from_directory('D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/logos', filename)
+    return send_from_directory(base_url + 'project/uploads/logos', filename)
 
 
 @app.route('/uploads/blog/<path:filename>')
 def blog_static(filename):
-	pass
+	return send_from_directory(base_url + 'project/uploads/blog', filename)
 
-
-@app.route('/print', methods=['GET','POST'])
-def printer():
-    form = CreateForm(request.form)
-    if request.method == 'POST' and form.validate():
-        from project.models.Printer import Printer
-        printer = Printer()
-        printer.show_string(form.text.data)
-        return render_template('printer/index.html')
-    return render_template('printer/print.html', form=form)
-
-
-@app.route("/dbsend", methods=['POST'])
-def sendData():
-	data = request.form
-	return jsonify(data)
-
-
-@app.route("/dbget", methods=['GET'])
-@login_required
-def getData():
-	users = User.query.all()
-	return render_template("printer/queryAll.html", users=users)
-
-
+#logged in checker
 def noLogon():
 	if current_user.is_authenticated:
-		return ''
+		pass
 	else:
 		return redirect(url_for('login'))
 
 
 @app.route('/upload', methods=['POST'])
 def upload():
-    current_app.logger.info(f'uploading')
+    current_app.logger.info('uploading')
     if request.method == 'POST' and 'image' in request.files:
         image = Image('', post=request.files['image'], root=current_app.config['GALLERY_ROOT_DIR'])
 
         if image.path.suffix in current_app.config['UPLOAD_ALLOWED_EXTENSIONS']:
             return ("ok", 201,)
 
-        current_app.logger.info(f'failed to upload {image!r}')
+        current_app.logger.info('failed to upload')
 
     return (jsonify({'error': 'you need to pass an image'}), 400)
 

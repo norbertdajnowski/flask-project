@@ -6,6 +6,7 @@ from flask import Flask
 from flask_login import LoginManager
 from flask_debugtoolbar import DebugToolbarExtension
 from flask_sqlalchemy import SQLAlchemy
+import dotenv
 
 def create_app():
 	db.init_app(app)
@@ -20,10 +21,11 @@ def create_app():
 	def load_user(user_id):
 		return User.query.get(int(user_id))
 
+CONFIG = dotenv.dotenv_values()
 app = Flask('project')
-app.config['SECRET_KEY'] = 'random'
-app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://norbert.d:TV91OJsBxBLgnMVb@cs2s.yorkdc.net:3306/norbertdajnowski_restserver'
+app.config['SECRET_KEY'] = '\xe9\x11%\xd4\xd5ko\x1b:=:\x80\x8d0\t\xd4O\xd8\xd1R\xb3U\xdc'
+app.debug = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://'+CONFIG['SQL_USERNAME']+':'+CONFIG['SQL_PASSWORD']+'@'+CONFIG['SQL_HOST']+':'+CONFIG['SQL_PORT']+'/'+CONFIG['SQL_DATABASE']
 db = SQLAlchemy(app)
 toolbar = DebugToolbarExtension(app)
 create_app()
