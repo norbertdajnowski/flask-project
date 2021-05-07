@@ -23,7 +23,7 @@ def create_app():
 app = Flask('project')
 app.config['SECRET_KEY'] = 'random'
 app.debug = True
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://norbert.d:TV91OJsBxBLgnMVb@cs2s.yorkdc.net:3306/norbertdajnowski_restserver'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://norbert.d:TV91OJsBxBLgnMVb@ysjcs.net:3306/norbertdajnowski_restserver'
 db = SQLAlchemy(app)
 toolbar = DebugToolbarExtension(app)
 create_app()

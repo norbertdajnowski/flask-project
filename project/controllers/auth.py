@@ -31,46 +31,6 @@ def login_post():
 	return render_template('dashGallery.html', current_user=current_user, logos=logos, images=images)
 
 
-@app.route('/signup')
-def signup():
-	#Check if already logged in
-	return render_template('signupIndex.html')
-
-
-@app.route('/signup', methods=['POST'])
-def signup_post():
-    
-	email = request.form.get('email')
-	username = request.form.get('username')
-	name = request.form.get('name')
-	password = request.form.get('password')
-
-	user = User.query.filter_by(email=email).first() # if this returns a user, then the email already exists in database
-
-	if user: # if a user is found, we want to redirect back to signup page so user can try again
-		flash('Email address already exists.')
-		return redirect(url_for('signup'))
-
-	if len(password) < 7:
-		flash('Your password is too short, minimum 7 characters.')
-		return redirect(url_for('signup'))
-
-	if any(map(str.isupper, password)):
-		print("Password Pass")
-	else:
-		flash('Password entered needs to have at least one capital character.')
-		return redirect(url_for('signup'))
-
-    # create a new user with the form data. Hash the password so the plaintext version isn't saved.
-	new_user = User(username=username, email=email, password=generate_password_hash(password, method='sha256'), name=name)
-
-    # add the new user to the database
-	db.session.add(new_user)
-	db.session.commit()
-
-	return redirect(url_for('login'))
-
-
 @app.route('/logout')
 @login_required
 def logout():

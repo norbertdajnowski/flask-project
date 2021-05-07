@@ -6,6 +6,8 @@ from pathlib import Path
 from project import app, db
 from flask_sqlalchemy import SQLAlchemy
 
+base_url = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/"
+
 class User(UserMixin, db.Model):
 
 	def __init__(self, username, email, password, name):
@@ -49,26 +51,13 @@ class FilesystemObjectDoesNotExist(Exception):
 
 class FilesystemObject(object):
 
-
+    base_url = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/"
 
     def __init__(self, filename, post=None, root=None):
-        """Create an object from the information of the given filename or from a
-        uploaded file.
-
-        Example of usage:
-
-            if request.method == 'POST' and 'photo' in request.POST:
-                f = FilesystemObject('cats.png', request.POST['photo'])
-
-        """
-        catTag =['foo, des, eve']
 
         self.root_dir = Path(root)
         self.path = Path(filename if not post else secure_filename(post.filename))
         self.abspath = self.root_dir / self.path
-        catList = str(self.path).split('.')
-        self.category = catList[1]
-
 
         if post:
             self.upload(post)
@@ -84,13 +73,24 @@ class FilesystemObject(object):
     def __repr__(self):
         return f'<{self.__class__.__name__}(filename={self.path}, root={self.root_dir})>'
 
-    def upload(post):
+    def upload(post, images):
+        i = 0
         galleryPath = "project/uploads/gallery/"
+        img_names = Image.all_filenames(base_url + galleryPath)
+        for x in img_names:
+            print(x)
+            tempList = x.split(".")
+            if i < int(tempList[0]):
+                i = int(tempList[0])
+            i = i + 1
+        post.save(galleryPath + str(i) + ".foo.jpg")
 
-        post.save(galleryPath + "12.foo.jpg")
+    def uploadBlog(post, filename):
+        galleryPath = "project/uploads/blog/"
+        post.save(galleryPath + filename)
 
     def remove(file):
-        absolutePath = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/project/uploads/gallery/"
+        absolutePath = base_url + "project/uploads/gallery/"
         filename = file.split('/')
         file = absolutePath + filename[len(filename) - 1]
         print(file)
@@ -105,10 +105,15 @@ class FilesystemObject(object):
 
     @classmethod
     def all(cls, root):
-        """Return a list of files contained in the directory pointed by settings.GALLERY_ROOT_DIR.
-        """
+        """Return a list of files contained in the directory pointed at"""
         return [cls(filename=x, root=root) for x in os.listdir(root)]
 
+    @classmethod
+    def all_filenames(cls, root):
+        filenames = []
+        for x in os.listdir(root):
+            filenames.append(x)
+        return filenames
 
 class Image(FilesystemObject):
     pass
