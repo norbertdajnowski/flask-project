@@ -10,7 +10,10 @@ from werkzeug.security import generate_password_hash, check_password_hash
 @app.route('/login')
 def login():
 	#Check if already logged in
-	return render_template('loginIndex.html')
+	if current_user.is_authenticated:
+		return render_template('dashGallery.html', current_user=current_user, logos=logos, images=images)
+	else:
+		return render_template('loginIndex.html')
 
 @app.route('/login', methods=["POST"])
 def login_post():

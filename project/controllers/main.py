@@ -10,8 +10,8 @@ from wtforms import StringField
 from wtforms.validators import DataRequired					
 
 base_url = "D:/ProgramData/Third Year - SEM 2/Advanced Web/rest-server/flask-mvc/"
-logos = Image.all('project/uploads/logos')
-images = Image.all('project/uploads/gallery')
+logos = Image.all(base_url + 'project/uploads/logos')
+images = Image.all(base_url + 'project/uploads/gallery')
 
 class CreateForm(FlaskForm):
     text = StringField('name', validators=[DataRequired()])
@@ -129,7 +129,7 @@ def blog_static(filename):
 
 def noLogon():
 	if current_user.is_authenticated:
-		return ''
+		pass
 	else:
 		return redirect(url_for('login'))
 

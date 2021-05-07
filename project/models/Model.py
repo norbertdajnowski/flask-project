@@ -58,6 +58,8 @@ class FilesystemObject(object):
         self.root_dir = Path(root)
         self.path = Path(filename if not post else secure_filename(post.filename))
         self.abspath = self.root_dir / self.path
+        tempSplit = filename.split(".")
+        self.category = tempSplit[1]
 
         if post:
             self.upload(post)
