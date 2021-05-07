@@ -1,0 +1,18 @@
+{% extends "layout/authLayout.html" %}
+{% block body %}
+<div id="formContent">
+    <h3 class="title">Login</h3>
+    	{% with messages = get_flashed_messages() %}
+        {% endwith %}
+        <form method="POST" action="/login">
+            <input type="text" name="email" placeholder="Your Email" autofocus="">
+            <input type="text" name="password" placeholder="Your Password">
+            <label class="checkbox">
+                <input type="checkbox">
+                    Remember me
+            </label>
+            <input type="submit" value="Login">
+            <a href="/" class="authSwitch">Home</a>
+        </form>
+</div>
+{% endblock %}

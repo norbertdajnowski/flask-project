@@ -1,0 +1,45 @@
+{% extends "layout/dashLayout.html" %}
+{% block logo %}
+   {% for logo in logos %}
+   <div class="image-container">
+      <a href="{{url_for('start')}}"><img src="{{ url_for('logos_static', filename=logo.path) }}"></a>
+   </div>
+   {% endfor %}
+{% endblock %}
+{% block dashGallery %}
+   active
+{% endblock %}
+{% block body %}
+	<div class="col-sm-9" style="overflow-y: auto; max-height: 92.5vh">
+		<div class="row">
+            {% if current_user.is_authenticated %}
+               <div style="float: right; margin-top: 15px; margin-right: 15px;">
+                  <a href="#">Welcome {{ current_user.name }}  |  </a>
+                  <a href="{{url_for('logout')}}"> Logout</a>  
+               </div>  
+            {% endif %} 
+            <div class="col-lg-12 text-center my-2">
+               <h2>Our Gallery</h2>
+            </div>
+         </div>
+         <div class="row" style="text-align: center; display: inline-block; width: 100%;">
+            <form class="col-md-6" method="POST" action="/removeImg">
+               <input type="hidden" name="filename" class="removeID">
+               <input class="" type="submit" name="Remove" value="Remove Image">
+            </form>
+            <form class="col-md-6" name="formUpload" id="uploadID" method="POST" action="/uploadImg" enctype="multipart/form-data">
+               <input type="file" name="file1" id="fileID" style="display:none">
+               <input type="button" name="upload" id="upload" value="Upload Image">
+            </form>
+         </div>
+         <hr>
+         <div class="portfolio-items">
+         {% for image in images %}
+            <div class="item selectable ui-selectable">
+               	<img class="ui-widget-content" src="{{ url_for('gallery_static', filename=image.path) }}" alt="">
+               </a>
+            </div>
+         {% endfor %}
+     	</div>
+    </div>
+{% endblock %}

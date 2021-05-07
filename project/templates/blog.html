@@ -1,0 +1,38 @@
+{% extends "layout/layout.html" %}
+{% block logo %}
+   {% for logo in logos %}
+   <div class="image-container">
+      <a href="{{url_for('start')}}"><img src="{{ url_for('logos_static', filename=logo.path) }}" ></a>
+   </div>
+   {% endfor %}
+{% endblock %}
+{% block navBlog %}
+   active
+{% endblock %}
+{% block body %}
+	<div class="col-sm-9" style="overflow-y: auto; max-height: 92.5vh">
+		<div class="row">
+            <div class="col-lg-12 text-center my-2">
+               <h2>Blog</h2>
+            </div>
+     	</div>
+      {% for blog in blogs %}
+      <div class="row">
+
+         <!-- Post Content Column -->
+         <div class="col-lg-8" style="width: 100%; padding: 0;">
+         <a href="{{url_for('getBlog', id=blog.id)}}"> 
+         <div class="post-wrapper"> 
+         <hr>
+         <!-- Title -->
+         <h2>{{ blog.title }}</h2>
+         <!-- Author | Date/Time -->
+         <p style="font-weight: bold;">By {{ blog.author }} | {{ blog.date }}</p>
+         <p>{{ blog.content }}</p>
+         </div>
+         </a>
+         </div>
+      </div>
+      {% endfor %}
+    </div>
+{% endblock %}
